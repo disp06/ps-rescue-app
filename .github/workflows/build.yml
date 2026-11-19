@@ -1,0 +1,20 @@
+name: build
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  vpk:
+    runs-on: ubuntu-latest
+    container: vitasdk/vitasdk:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          apk add --no-cache cmake make || true
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VitaBootDiag
+          path: |
+            build/app/VitaBootDiag.vpk
+            build/plugins/boot_logger_kernel/boot_logger.skprx
+            build/plugins/boot_logger_user/boot_logger.suprx
